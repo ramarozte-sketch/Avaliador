@@ -25,9 +25,17 @@ jobs:
           gradle-version: '8.9'
 
       - name: Compilar
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: |
+          F=$(find . -name settings.gradle -not -path './.git/*' | head -n1)
+          if [ -z "$F" ]; then
+            echo "Não encontrei settings.gradle. Envie o conteúdo do zip para o repositório."
+            ls -R | head -50
+            exit 1
+          fi
+          cd "$(dirname "$F")"
+          gradle assembleDebug --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: NotaFalada-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: '**/app/build/outputs/apk/debug/*.apk'
