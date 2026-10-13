@@ -11,6 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Extrair o projeto do zip
+        run: |
+          if ! find . -name settings.gradle -not -path './.git/*' | grep -q .; then
+            Z=$(ls *.zip | head -n1)
+            echo "A extrair $Z"
+            unzip -q -o "$Z"
+          fi
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -28,7 +36,7 @@ jobs:
         run: |
           F=$(find . -name settings.gradle -not -path './.git/*' | head -n1)
           if [ -z "$F" ]; then
-            echo "Não encontrei settings.gradle. Envie o conteúdo do zip para o repositório."
+            echo "Não encontrei settings.gradle."
             ls -R | head -50
             exit 1
           fi
